@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CashFlow</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#22c55e">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="greeting">
+                <div>Good afternoon,</div>
+                <div class="name" id="user-name">Jayden 👋</div>
+            </div>
+            <div class="settings" onclick="toggleSettings()">⚙️</div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="main-content" id="home-screen">
+            <!-- Period Tabs -->
+            <div class="period-tabs">
+                <button class="tab" onclick="setPeriod(0)">Week</button>
+                <button class="tab" onclick="setPeriod(1)">2 Weeks</button>
+                <button class="tab active" onclick="setPeriod(2)">Month</button>
+            </div>
+
+            <!-- Leftover Card -->
+            <div class="leftover-card">
+                <div class="leftover-label">Leftover this Month</div>
+                <div class="leftover-amount" id="leftover-amount">$0.00</div>
+                
+                <div class="income-bills">
+                    <div class="income">
+                        <div class="icon up">↑</div>
+                        <div>
+                            <div class="label">Income</div>
+                            <div class="amount" id="total-income">$0.00</div>
+                        </div>
+                    </div>
+                    <div class="bills">
+                        <div class="icon down">↓</div>
+                        <div>
+                            <div class="label">Bills</div>
+                            <div class="amount" id="total-bills">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="budget-section">
+                    <div class="budget-label">Budget used <span class="percent" id="budget-percent">0%</span></div>
+                    <div class="progress-bar">
+                        <div class="progress" id="budget-progress" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-card" onclick="showAddTransactionModal()">
+                    <div class="action-icon">↕️</div>
+                    <div class="action-label">Add<br>Transaction</div>
+                </div>
+                <div class="action-card" onclick="showAddBillModal()">
+                    <div class="action-icon">📄</div>
+                    <div class="action-label">Add<br>Bill</div>
+                </div>
+                <div class="action-card" onclick="showAddIncomeModal()">
+                    <div class="action-icon">💵</div>
+                    <div class="action-label">Add<br>Income</div>
+                </div>
+            </div>
+
+            <!-- Financial Health -->
+            <div class="health-card">
+                <div class="health-left">
+                    <svg class="circle-progress" width="120" height="120" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="#e5e7eb" stroke-width="16"></circle>
+                        <circle id="health-circle" cx="60" cy="60" r="52" fill="none" stroke="#22c55e" stroke-width="16" stroke-dasharray="326.73" stroke-dashoffset="22" transform="rotate(-90 60 60)"></circle>
+                    </svg>
+                    <div class="score" id="health-score">93</div>
+                </div>
+                <div class="health-right">
+                    <div class="health-title">Excellent</div>
+                    <div class="health-subtitle">Financial Health Score</div>
+                    <div class="metrics">
+                        <div>Bills ratio <span class="metric-value" id="bills-ratio">13%</span></div>
+                        <div class="bar"><div class="bar-fill" id="bills-bar" style="width:13%"></div></div>
+                        <div>Savings rate <span class="metric-value" id="savings-rate">87%</span></div>
+                        <div class="bar"><div class="bar-fill" id="savings-bar" style="width:87%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Other screens (placeholder for now) -->
+        <div id="bills-screen" class="screen hidden">
+            <h2 style="padding:20px;">Bills & Income</h2>
+            <div id="bills-list" class="list"></div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="switchTab(0)">
+                <div class="nav-icon">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab(1)">
+                <div class="nav-icon">📄</div>
+                <span>Bills</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab(2)">
+                <div class="nav-icon">↕️</div>
+                <span>Activity</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab(3)">
+                <div class="nav-icon">📅</div>
+                <span>Calendar</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab(4)">
+                <div class="nav-icon">🎯</div>
+                <span>Goals</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Income Modal -->
+    <div id="income-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Income</h2>
+            <p style="font-size:14px;color:#666;margin-bottom:12px;">Casual income? Enter what you got this pay and we'll track it.</p>
+            <input type="text" id="income-desc" placeholder="Description (e.g. Casual Pay)">
+            <select id="income-type">
+                <option value="casual">Casual</option>
+                <option value="parttime">Part Time</option>
+                <option value="fulltime">Full Time</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="number" id="income-amount" placeholder="Amount" step="0.01">
+            <input type="date" id="income-date">
+            <div class="modal-buttons">
+                <button onclick="hideModals()">Cancel</button>
+                <button onclick="addIncome()" style="background:#22c55e;color:white">Add Income</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bill Modal -->
+    <div id="bill-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Bill</h2>
+            <input type="text" id="bill-desc" placeholder="Bill name (e.g. Phone Bill)">
+            <input type="number" id="bill-amount" placeholder="Amount" step="0.01">
+            <input type="date" id="bill-date">
+            <div class="modal-buttons">
+                <button onclick="hideModals()">Cancel</button>
+                <button onclick="addBill()" style="background:#22c55e;color:white">Add Bill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div id="transaction-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add Transaction</h2>
+            <input type="text" id="trans-desc" placeholder="Description">
+            <input type="number" id="trans-amount" placeholder="Amount" step="0.01">
+            <select id="trans-type">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+            </select>
+            <input type="date" id="trans-date">
+            <div class="modal-buttons">
+                <button onclick="hideModals()">Cancel</button>
+                <button onclick="addTransaction()" style="background:#22c55e;color:white">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
